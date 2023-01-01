@@ -45,15 +45,23 @@ that calls the allowlist smart contract functions.
 
 ### Compiling the contract for deployment
 
-To create the contract code to add to the genesis file, compile the contract with the `--bin-runtime` option:
+From the contracts directory
 
-Copy the interface contract into this directory
+```sh
+cd contracts/
+```
 
-    cp ../ValidatorSmartContractInterface.sol .
+we can compile the contract to create the bytecode to add to the genesis file.
 
-Then compile the contract using solc 0.8.7
+For this matter we use the solc 0.8.17 Docker container to generate the bytecode in `contracts/supermajority/ValidatorSmartContractSupermajority.bytecode`:
 
-    solc --optimize --bin-runtime --evm-version=byzantium -o . ./ValidatorSmartContractAllowList.sol
+```sh
+docker run --rm --entrypoint=/bin/sh --workdir=/opt/contracts/supermajority --volume=$PWD:/opt/contracts ethereum/solc:0.8.17-alpine -c \
+    "cp ../ValidatorSmartContractInterface.sol .; \
+     solc --optimize --optimize-runs=200 --bin-runtime --evm-version=byzantium -o . ./ValidatorSmartContractSupermajority.sol &>/dev/null; \
+     cat ValidatorSmartContractSupermajority.bin-runtime; \
+     rm *Interface.sol *.bin-runtime" > ./supermajority/ValidatorSmartContractSupermajority.bytecode
+```
 
 ### Running tests
 
