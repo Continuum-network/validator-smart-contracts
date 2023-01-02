@@ -15,25 +15,19 @@ General information about QBFT can be found in the [Hyperledger Besu documentati
 
 ## Example contract
 
-The example smart contract can be found in the `contracts/allowlist` directory.
+The example smart contract can be found in the `contracts/supermajority` directory.
 
-The contract holds a list of accounts (the allowlist) that are each allowed to nominate one QBFT validator
-using an API.
+The contract holds the list of validator, who can vote to add/remove QBFT validators using an API.
 
-Accounts on the allowlist can use the API of this contract to:
+Validators can use the API of this contract to:
 
-* Activate a validator
-* Deactivate a validator
-* Vote to add an account to the allowlist
-* Vote to remove an account from the allowlist
-* Remove votes they have cast to add or remove an account
-* Execute the vote count for an account to be added or removed
+* Add a validator
+* Remove a validator
+* Remove votes they have cast to add or remove a validator
 
-For an election to be successful more than 50% of the current members of the allowlist must vote. Use the
-`countVotes` function to count the votes, and if successful, add or remove the specified account.
+For an election to be successful more than 66% of the current validators must vote. The votes are counted automatically, in every add/remove transaction, if the number of votes are enough.
 
-Events are emitted to enable users to get information about changes to the validators, allowed accounts,
-and voting.
+Events are emitted to enable users to get information about changes to the validators and voting.
 
 To use this contract from the genesis block of a blockchain, the initial state of this contract
 must be set in the genesis file. The `scripts/allowlist/genesisContent` directory of this
