@@ -30,11 +30,11 @@ For an election to be successful more than 66% of the current validators must vo
 Events are emitted to enable users to get information about changes to the validators and voting.
 
 To use this contract from the genesis block of a blockchain, the initial state of this contract
-must be set in the genesis file. The `scripts/allowlist/genesisContent` directory of this
+must be set in the genesis file. The `scripts/supermajority/genesisContent` directory of this
 repository contains a javascript script that creates the storage section for this contract.
-Refer to the ["Genesis file content"](#genesis-file-content) section.
+Refer to the ["Create the genesis file content"](#create-the-genesis-file-content) section.
 
-**Information**: See the web3-js based script in the `scripts/allowlist/cli` directory for an example CLI script
+**Information**: See the web3-js based script in the `scripts/supermajority/cli` directory for an example CLI script
 that calls the allowlist smart contract functions.
 
 ### Compiling the contract for deployment
