@@ -47,14 +47,13 @@ cd contracts/
 
 we can compile the contract to create the bytecode to add to the genesis file.
 
-For this matter we use the solc 0.8.17 Docker container to generate the bytecode in `contracts/supermajority/ValidatorSmartContractSupermajority.bytecode`:
+For this matter we use the solc 0.8.17 Docker container to generate the bytecode in `contracts/supermajority/ValidatorSmartContractSupermajority.bin-runtime`:
 
 ```sh
-docker run --rm --entrypoint=/bin/sh --workdir=/opt/contracts/supermajority --volume=$PWD:/opt/contracts ethereum/solc:0.8.17-alpine -c \
-    "cp ../ValidatorSmartContractInterface.sol .; \
-     solc --optimize --optimize-runs=200 --bin-runtime --evm-version=byzantium -o . ./ValidatorSmartContractSupermajority.sol &>/dev/null; \
-     cat ValidatorSmartContractSupermajority.bin-runtime; \
-     rm *Interface.sol *.bin-runtime" > ./supermajority/ValidatorSmartContractSupermajority.bytecode
+docker run --rm --entrypoint=/bin/sh --workdir=/tmp/contracts/supermajority --volume=$PWD:/opt/contracts ethereum/solc:0.8.17-alpine -c \
+  "cp -r /opt/contracts/. .. && cp ../ValidatorSmartContractInterface.sol .; \
+   solc --optimize --optimize-runs=200 --bin-runtime --evm-version=byzantium --overwrite -o . ./ValidatorSmartContractSupermajority.sol &>/dev/null; \
+   cat ValidatorSmartContractSupermajority.bin-runtime" > ./supermajority/ValidatorSmartContractSupermajority.bin-runtime
 ```
 
 ### Running tests
