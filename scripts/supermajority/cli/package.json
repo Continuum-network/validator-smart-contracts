@@ -1,10 +1,10 @@
 {
-  "name": "call_allowlist_functions",
+  "name": "call_supermajority_functions",
   "version": "1.0.0",
-  "main": "allowlist.js",
+  "main": "supermajority.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node allowlist.js"
+    "start": "node supermajority.js"
   },
   "keywords": [],
   "author": "",

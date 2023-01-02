@@ -4,30 +4,16 @@ const HDWalletProvider = require("@truffle/hdwallet-provider");
 const XRegExp = require('xregexp');
 const Fs = require('fs');
 const argv = require('yargs')
-    .env('ALLOWLIST')
-    .command('activate <validator>', 'activates a validator for the sender of the transaction', {
-        validator: {
+    .env(false)
+    .command('addValidator <account>', 'vote for a node to be added as new validator', {
+        account: {
+            description: 'address of the new validator as a hexadecimal string',
+            type: 'string',
+        }
+    })
+    .command('removeValidator <account>', 'vote for a validator to be removed', {
+        account: {
             description: 'address of the validator as a hexadecimal string',
-            type: 'string',
-        }
-    })
-    .command('deactivate', 'deactivates the validator for the sender of the transaction', {
-    })
-    .command('addAccount <account>', 'vote for an account to be added to the allowlist', {
-        account: {
-            description: 'address of the account as a hexadecimal string',
-            type: 'string',
-        }
-    })
-    .command('removeAccount <account>', 'vote for an account to be removed from the allowlist', {
-        account: {
-            description: 'address of the account as a hexadecimal string',
-            type: 'string',
-        }
-    })
-    .command('countVotes <account>', 'count the votes for an account to be added or removed', {
-        account: {
-            description: 'address of the account as a hexadecimal string',
             type: 'string',
         }
     })
@@ -37,9 +23,7 @@ const argv = require('yargs')
             type: 'string',
         }
     })
-    .command('getValidators', 'get validators from the latest block', {
-    })
-    .command('numAllowedAccounts', 'get the number of allowed accounts for the last block', {
+    .command('getValidators', 'get current validators', {
     })
     .option('contractAddress', {
         alias: 'a',
@@ -63,7 +47,7 @@ const argv = require('yargs')
     .option('chainId', {
         alias: 'i',
         demandOption: true,
-        default: '1337',
+        default: '1522',
         describe: 'chainId of the blockchain',
         type: 'string',
     })
@@ -104,8 +88,8 @@ function printEvent(eventname, receipt) {
     }
     switch (eventname) {
         case "Validator":
-            const activated = result.activated ? "activated" : "deactivated";
-            console.log(`Success: Account ${result.byAccount} has ${activated} validator ${result.validator}. Active validators: ${result.numValidators}.`);
+            const added = result.added ? "added" : "removed";
+            console.log(`Success: Account ${result.byAccount} has ${added} validator ${result.validator}. Active validators: ${result.numValidators}.`);
             break;
         case "Vote":
             const addRemove = result.voteToAdd ? "add" : "remove";
@@ -114,17 +98,13 @@ function printEvent(eventname, receipt) {
                 console.log(`Success: Account ${result.votingAccount} ${voteRemoved} to ${addRemove} account ${result.accountVotedFor}.`);
                 console.log(`There ${numVotesString} now and ${result.numVotesNeeded} needed to ${addRemove} this account.`);
             break;
-        case "AllowedAccount":
-            const added = result.added ? "added to" : "removed from";
-            console.log(`Success: Account ${result.account} has been ${added} the allowlist.`);
-            break;
         default:
             console.log(result);
     }
 }
 
 async function main() {
-    // This file is generated using 'solc --abi ValidatorSmartContractAllowList.sol -o .'
+    // This file is generated using 'solc --abi ValidatorSmartContractSupermajority.sol -o .'
     const abi = Fs.readFileSync('ValidatorSmartContractAllowList.abi', 'utf-8');
     const contractJson = JSON.parse(abi);
 
@@ -161,39 +141,20 @@ async function main() {
             case "getValidators":
                 console.log(`Validators: ${validators}`); // validators have already been retrieved when we checked the contract
                 break;
-            case "numAllowedAccounts":
-                const numAllowedAccounts = await mycontract.methods.numAllowedAccounts().call();
-                console.log(`Number of allowed Accounts: ${numAllowedAccounts}`);
-                break;
-            case "activate":
-                console.log(`Sending a transaction from account ${myAccount.address} to activate validator ${argv.validator}`);
-                receipt = await mycontract.methods.activate(getHex(argv.validator, 40, true, "validator")).send({from: myAccount.address});
-                printEvent("Validator", receipt);
-                break;
-            case "deactivate":
-                console.log(`Sending a transaction from account ${myAccount.address} to deactivate its validator`);
-                receipt = await mycontract.methods.deactivate().send({from: myAccount.address});
-                printEvent("Validator", receipt);
-                break;
-            case "addAccount":
-                console.log(`Sending a transaction from account ${myAccount.address} to vote to add account ${argv.account} to the allowlist`);
-                receipt = await mycontract.methods.voteToAddAccountToAllowList(getHex(argv.account, 40, true, "account")).send({from: myAccount.address});
+            case "addValidator":
+                console.log(`Sending a transaction from account ${myAccount.address} to vote to add address ${argv.account} to the validators`);
+                receipt = await mycontract.methods.voteToAddValidator(getHex(argv.account, 40, true, "account")).send({from: myAccount.address});
                 printEvent("Vote", receipt);
                 break;
-            case "removeAccount":
-                console.log(`Sending a transaction from account ${myAccount.address} to vote to remove account ${argv.account} from the allowlist`);
-                receipt = await mycontract.methods.voteToRemoveAccountFromAllowList(getHex(argv.account, 40, true, "account")).send({from: myAccount.address});
+            case "removeValidator":
+                console.log(`Sending a transaction from account ${myAccount.address} to vote to remove validator ${argv.account}`);
+                receipt = await mycontract.methods.voteToRemoveValidator(getHex(argv.account, 40, true, "account")).send({from: myAccount.address});
                 printEvent("Vote", receipt);
                 break;
             case "removeVote":
                 console.log(`Sending a transaction from account ${myAccount.address} to remove vote for account ${argv.account}`);
                 receipt = await mycontract.methods.removeVoteForAccount(getHex(argv.account, 40, true, "account")).send({from: myAccount.address});
                 printEvent("Vote", receipt);
-                break;
-            case "countVotes":
-                console.log(`Sending a transaction from account ${myAccount.address} to count the votes for account ${argv.account}`);
-                receipt = await mycontract.methods.countVotes(getHex(argv.account, 40, true, "account")).send({from: myAccount.address});
-                printEvent("AllowedAccount", receipt);
                 break;
             default:
                 console.log(`Unknown command ${argv._[0]}`);
