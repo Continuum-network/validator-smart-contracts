@@ -66,57 +66,61 @@ Unit tests are executed via Truffle:
 
 ## Create the genesis file content
 
-The `script/allowlist/genesisContent` directory contains the `createContent.js` script that generates the content
-required for the genesis file of a network that uses the allowlist smart contracts (`contracts/allowlist`).
+The `scripts/supermajority/genesisContent` directory contains the `createContent.js` script that generates the content
+required for the genesis file of a network that uses the example smart contracts (`contracts/supermajority`).
 
 ### Create the input file
 
-The script reads the file `allowedAccountsAndValidators.txt` that defines in each line the address of an allowed account and
-(optionally) the validator for that account. The account and the validator are specified using their address as a
-hexadecimal string. If the account has a nominated validator, the account and the validator hexadecimal strings need
-to be separated by a comma:
+The script reads the file `initialValidators.txt` that contains in each line the address of one validators:
 
-    0x5B38Da6a701c568545dCfcB03FcB875f56beddC4, 0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
+    0x5B38Da6a701c568545dCfcB03FcB875f56beddC4
+    0xAb8483F64d9C6d1EcF9b849Ae677dD3315835cb2
     0xCA35b7d915458EF540aDe6068dFe2F44E8fa733c
-    0x4b20993Bc481177ec7E8f571ceCaE8A9e22C02db, 0x79731D3Ca6b7E34aC0F824c42a7cC18A495cabaB
+    0x4b20993Bc481177ec7E8f571ceCaE8A9e22C02db
 
-The three lines above specify three accounts on the allowlist, and the validators for the first and third account.
-
-You can export the node's address using the following Besu command:
+You can export a validator node's address using the following Besu command:
 
     besu public-key export-address
 
 ### Run the Script
 
-**Prerequisites**:
+In the directory of the script
 
-* Install the script dependencies by running run `yarn install` in the `scripts/allowlist/genesisContent` directory.
+```sh
+cd scripts/supermajority/genesisContent/
+```
 
-Run the script in the `scripts/allowlist/genesisContent` directory:
+we use the node 19 Docker container to run the script and generate the output:
 
-    node createContent.js
+```sh
+docker run --rm --entrypoint=/bin/sh --workdir=/tmp/genesisContent --volume=$PWD:/opt/genesisContent node:19-alpine3.16 -c \
+  "cp -r /opt/genesisContent/. .; \
+   yarn install &>/dev/null && node createContent.js &>/dev/null; \
+   cat Storage.txt" > Storage.txt
+```
 
 ### Output
 
 The script creates a file named `Storage.txt`. The content of this file for the above example looks as follows:
 
-	"<Address of Contract>": {
-        "comment": "validator smart contract",
-        "balance": "0x00",
-        "code": "0x<Contract Code>",
-        "storage": {
-            "0000000000000000000000000000000000000000000000000000000000000000": "0000000000000000000000000000000000000000000000000000000000000002",
-            "290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563": "000000000000000000000000ab8483f64d9c6d1ecf9b849ae677dd3315835cb2",
-            "290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e564": "00000000000000000000000079731d3ca6b7e34ac0f824c42a7cc18a495cabab",
-            "36306db541fd1551fd93a60031e8a8c89d69ddef41d6249f5fdc265dbc8fffa2": "0000000000000000000000000000000000000000000000000000000000000101",
-            "58d9a93947083dcdedec58d43912ce0326f251a85b7701c5de5bc7d7a150676e": "0000000000000000000000000000000000000000000000000000000000000001",
-            "e20f19dc6931eb9e42fe3f21abe1a9ef59942d8e586871d88564d0d0b63a5e5c": "0000000000000000000000000000000000000000000000000000000000010101",
-            "f4c32baaad9a468f8a07690e6d59a45329a58ffaa2080ee4ccc1c4e2d7249e78": "0000000000000000000000005b38da6a701c568545dcfcb03fcb875f56beddc4",
-            "5dbbb5c5a02cb5b882ed6d78dcc49118067d39a359082b7fe270d1949d2ca44d": "0000000000000000000000004b20993bc481177ec7e8f571cecae8a9e22c02db",
-            "0000000000000000000000000000000000000000000000000000000000000003": "0000000000000000000000000000000000000000000000000000000000000003"
-        },
-        "version": "0x01"
-    }
+```json
+"<Address of Contract>": {
+	"comment": "validator smart contract",
+	"balance": "0x00",
+	"code": "0x<Contract Code>",
+	"storage": {
+		"0000000000000000000000000000000000000000000000000000000000000000": "0000000000000000000000000000000000000000000000000000000000000004",
+		"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e563": "0000000000000000000000005b38da6a701c568545dcfcb03fcb875f56beddc4",
+		"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e564": "000000000000000000000000ab8483f64d9c6d1ecf9b849ae677dd3315835cb2",
+		"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e565": "000000000000000000000000ca35b7d915458ef540ade6068dfe2f44e8fa733c",
+		"290decd9548b62a8d60345a988386fc84ba6bc95484008f6362f93160ef3e566": "0000000000000000000000004b20993bc481177ec7e8f571cecae8a9e22c02db",
+		"36306db541fd1551fd93a60031e8a8c89d69ddef41d6249f5fdc265dbc8fffa2": "0000000000000000000000000000000000000000000000000000000000000001",
+		"9d4d959825f0680278e64197773b2a50cd78b2b2cb00711ddbeebf0bf93cd8a4": "0000000000000000000000000000000000000000000000000000000000000001",
+		"58d9a93947083dcdedec58d43912ce0326f251a85b7701c5de5bc7d7a150676e": "0000000000000000000000000000000000000000000000000000000000000001",
+		"e20f19dc6931eb9e42fe3f21abe1a9ef59942d8e586871d88564d0d0b63a5e5c": "0000000000000000000000000000000000000000000000000000000000000001"
+	}
+}
+```
 
 The content of the file needs to be placed in the genesis file for the network. In addition the `<Address of Contract>`
 and `<Contract Code>` must be filled in.
@@ -124,9 +128,7 @@ and `<Contract Code>` must be filled in.
 An example of a genesis file using QBFT can be found in the `genesis.json` file in this directory.
 
 * `<Address of Contract>` must be identical to `validatorcontractaddress` located in the `qbft` section of the genesis file.
-* `<Contract Code>` must contain the binary runtime code for the `ValidatorSmartContractAllowList.sol` contract in `contracts/allowlist`.
-  The binary can be found in the example `genesis.json` file in this directory. For this binary the
-  `ValidatorSmartContractAllowList.sol` contract was compiled using `--bin-runtime`, `--evm-version byzantium`, and `--optimize` options of the solidity compiler.
+* `<Contract Code>` must contain the binary runtime code for the `ValidatorSmartContractSupermajority.sol` contract in `contracts/supermajority`.
 
 General information about the genesis file can be found in the [Besu documentation](https://besu.hyperledger.org/en/stable/Reference/Config-Items/).
 
@@ -134,12 +136,10 @@ General information about the genesis file can be found in the [Besu documentati
 
 The storage section defines the state of the contract in the genesis block of the blockchain.
 For general information on the layout of state variables in storage see
-https://docs.soliditylang.org/en/v0.8.7/internals/layout_in_storage.html.
+https://docs.soliditylang.org/en/v0.8.17/internals/layout_in_storage.html.
 
 The storage section created by the `createContent.js` script defines
-* the initial `validators` array (line 1 - 3 in the storage section)
-* the initial `allowedAccounts` mapping (line 4 - 6 in the storage section)
-* the initial `validatorToAccounts` mapping (line 7 and 8 in the storage section)
-* the initial `numAllowedAccounts` uint (line 9 in the storage section)
+* the initial `validators` array (line 1 - 5 in the storage section)
+* the initial `isValidator` mapping (line 6 - 9 in the storage section)
 
 For more detail please see the script.
