@@ -58,11 +58,15 @@ docker run --rm --entrypoint=/bin/sh --workdir=/tmp/contracts/supermajority --vo
 
 ### Running tests
 
-Unit tests are executed via Truffle:
+Unit tests are executed via Truffle in a node 19 Docker container:
 
-    yarn install
-    yarn truffle compile
-    yarn truffle test
+```sh
+docker run --rm --entrypoint=/bin/sh --workdir=/tmp/validator-smart-contracts --volume=$PWD:/opt/validator-smart-contracts node:19-alpine3.16 -c \
+  "cp -r /opt/validator-smart-contracts/. .; \
+   yarn install; \
+   yarn truffle compile; \
+   yarn truffle test"
+```
 
 ## Create the genesis file content
 
