@@ -105,7 +105,7 @@ function printEvent(eventname, receipt) {
 
 async function main() {
     // This file is generated using 'solc --abi ValidatorSmartContractSupermajority.sol -o .'
-    const abi = Fs.readFileSync('ValidatorSmartContractAllowList.abi', 'utf-8');
+    const abi = Fs.readFileSync('ValidatorSmartContractSupermajority.abi', 'utf-8');
     const contractJson = JSON.parse(abi);
 
     let provider = new HDWalletProvider({
