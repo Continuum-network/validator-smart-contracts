@@ -132,3 +132,7 @@ dist
 # Generated files
 *.bin-runtime
 Storage.txt
+
+# CLI files
+**/cli/yarn.lock
+**/cli/package-lock.json
