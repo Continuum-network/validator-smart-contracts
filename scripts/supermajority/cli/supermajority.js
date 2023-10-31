@@ -184,7 +184,7 @@ async function main() {
           `Sending a transaction from account ${myAccount.address} to vote`
         );
         receipt = await mycontract.methods
-          .adminVote(getHex(argv.account, 40, true, "account"))
+          .adminVoteToAddValidator(getHex(argv.account, 40, true, "account"))
           .send({ from: myAccount.address });
         printEvent("Vote", receipt);
         console.log("Admin Successfuly Added the New Validator");
