@@ -133,6 +133,9 @@ dist
 *.bin-runtime
 Storage.txt
 
+.DS_Store
+contracts/.DS_Store
+
 # CLI files
 **/cli/yarn.lock
 **/cli/package-lock.json
