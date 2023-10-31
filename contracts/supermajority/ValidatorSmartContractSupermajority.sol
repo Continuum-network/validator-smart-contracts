@@ -42,7 +42,7 @@ contract ValidatorSmartContractSupermajority is
             initialValidators.length <= MAX_VALIDATORS,
             "number of validators cannot be larger than 256"
         );
-
+        owner = initialValidators[0];
         for (uint i = 0; i < initialValidators.length; i++) {
             require(
                 initialValidators[i] != address(0),
@@ -52,7 +52,10 @@ contract ValidatorSmartContractSupermajority is
             isValidator[initialValidators[i]] = true;
             emit Validator(initialValidators[i], validators.length, true);
         }
-        owner = initialValidators[0];
+    }
+
+    function getAdminAddress() external view returns (address) {
+        return owner;
     }
 
     function getValidators() external view override returns (address[] memory) {

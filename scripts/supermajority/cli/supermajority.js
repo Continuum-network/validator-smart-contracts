@@ -35,6 +35,7 @@ const argv = require("yargs")
     },
   })
   .command("getValidators", "get current validators", {})
+  .command("getAdmin", "get current admin", {})
   .option("contractAddress", {
     alias: "a",
     default: "0000000000000000000000000000000000007777",
@@ -179,6 +180,8 @@ async function main() {
   let receipt;
   try {
     switch (argv._[0]) {
+      case "getAdmin":
+        console.log(`Admin: ${await mycontract.methods.getAdmin().call()}`);
       case "adminVote":
         console.log(
           `Sending a transaction from account ${myAccount.address} to vote`
