@@ -20,11 +20,11 @@ contract ValidatorSmartContractSupermajority is
 
     uint constant MAX_VALIDATORS = 256;
 
-    address private owner;
     address[] private validators;
     mapping(address => bool) private isValidator;
     mapping(address => address[]) private currentVotes; // mapping the votes for adding or removing an account to the accounts that voted for it
     mapping(address => bool) private adminVote;
+    address private owner;
 
     modifier senderIsValidator() {
         require(isValidator[msg.sender], "sender is not a validator");
