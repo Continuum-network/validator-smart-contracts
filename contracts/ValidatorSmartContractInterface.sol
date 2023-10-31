@@ -1,9 +1,6 @@
-// Interface for contracts used to select validators 
-  
-pragma solidity >=0.5.0;
-  
+//SPDX-License-Identifier: MIT
+pragma solidity >=0.8.15;
+
 interface ValidatorSmartContractInterface {
-
     function getValidators() external view returns (address[] memory);
-
 }
