@@ -181,7 +181,9 @@ async function main() {
   try {
     switch (argv._[0]) {
       case "getAdmin":
-        console.log(`Admin: ${await mycontract.methods.getAdmin().call()}`);
+        console.log(
+          `Admin: ${await mycontract.methods.getAdminAddress().call()}`
+        );
       case "adminVote":
         console.log(
           `Sending a transaction from account ${myAccount.address} to vote`
